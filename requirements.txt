@@ -1,0 +1,12 @@
+sentencepiece
+timm
+einops
+transformers==4.47.0
+accelerate
+bitsandbytes
+opencv-python-headless
+numpy
+tqdm
+huggingface_hub
+kaggle
+qwen-vl-utils
