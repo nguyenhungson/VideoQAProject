@@ -10,7 +10,7 @@ DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 class Qwen2VLBenchmark:
     def __init__(self):
-        print("🤖 Đang khởi tạo Qwen2-VL-2B-Instruct...")
+        print("Đang khởi tạo Qwen2-VL-2B-Instruct...")
         from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
         self.model = Qwen2VLForConditionalGeneration.from_pretrained(
             "Qwen/Qwen2-VL-2B-Instruct", torch_dtype=torch.bfloat16, device_map="auto"
@@ -22,7 +22,7 @@ class Qwen2VLBenchmark:
         correct_preds, latencies, error_logs = 0, [], []
         starter, ender = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
 
-        print("🔥 Warm-up Qwen2-VL (5 samples)...")
+        print("Warm-up Qwen2-VL (5 samples)...")
         with torch.inference_mode():
             for i, batch in enumerate(test_loader):
                 if i >= 5: break
@@ -32,7 +32,7 @@ class Qwen2VLBenchmark:
                 inputs = self.processor(text=[text], images=img_in, videos=vid_in, padding=True, return_tensors="pt").to(DEVICE)
                 _ = self.model.generate(**inputs, max_new_tokens=5, do_sample=False)
 
-        print("⚡ Đang đánh giá chân thực Qwen2-VL...")
+        print("Đang đánh giá chân thực Qwen2-VL...")
         with torch.inference_mode():
             for batch in tqdm(test_loader, desc="Qwen2-VL Testing"):
                 ground_truth = batch["answer"][0].strip().lower()
@@ -60,7 +60,7 @@ class Qwen2VLBenchmark:
 
     def _print_report(self, name, correct, total, latencies):
         print("\n" + "="*55)
-        print(f"📈 BÁO CÁO NGHIỆM THU MLLM: {name}")
+        print(f"BÁO CÁO NGHIỆM THU MLLM: {name}")
         print("="*55)
         print(f"🔹 Accuracy         : {(correct / total) * 100:.2f}%")
         print(f"🔹 Inference Latency: {np.mean(latencies):.2f} ms / câu")
@@ -70,7 +70,7 @@ class Qwen2VLBenchmark:
 
 class InternVL2Benchmark:
     def __init__(self):
-        print("🤖 Đang khởi tạo InternVL2-2B...")
+        print("Đang khởi tạo InternVL2-2B...")
         from transformers import AutoTokenizer, AutoModel
         self.model = AutoModel.from_pretrained(
             "OpenGVLab/InternVL2-2B", torch_dtype=torch.bfloat16, low_cpu_mem_usage=True, trust_remote_code=True
@@ -96,14 +96,14 @@ class InternVL2Benchmark:
         correct_preds, latencies = 0, []
         starter, ender = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
 
-        print("🔥 Warm-up InternVL2 (5 samples)...")
+        print("Warm-up InternVL2 (5 samples)...")
         with torch.inference_mode():
             for i, batch in enumerate(test_loader):
                 if i >= 5: break
                 pixels = self._get_pixels(batch["video_path"][0])
                 _ = self.model.chat(self.tokenizer, pixels, "<image>\n"*8 + "Q", dict(max_new_tokens=5, do_sample=False), num_patches_list=[1]*8, history=None)
 
-        print("⚡ Đang đánh giá chân thực InternVL2...")
+        print("Đang đánh giá chân thực InternVL2...")
         with torch.inference_mode():
             for batch in tqdm(test_loader, desc="InternVL2 Testing"):
                 ground_truth = batch["answer"][0].strip().lower()
@@ -120,7 +120,7 @@ class InternVL2Benchmark:
                     correct_preds += 1
 
         print("\n" + "="*55)
-        print("📈 BÁO CÁO NGHIỆM THU MLLM: INTERNVL2-2B")
+        print("BÁO CÁO NGHIỆM THU MLLM: INTERNVL2-2B")
         print("="*55)
         print(f"🔹 Accuracy         : {(correct_preds / len(test_loader.dataset)) * 100:.2f}%")
         print(f"🔹 Inference Latency: {np.mean(latencies):.2f} ms / câu")

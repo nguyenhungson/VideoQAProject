@@ -20,7 +20,6 @@ def train():
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=1e-4, weight_decay=1e-4)
     
-    # BỔ SUNG: Scheduler giúp learning rate giảm dần mượt mà, giúp loss hội tụ sâu hơn
     num_epochs = 50 
     scheduler = CosineAnnealingLR(optimizer, T_max=num_epochs)
     scaler = torch.amp.GradScaler('cuda')
@@ -28,7 +27,7 @@ def train():
     os.makedirs('./checkpoints', exist_ok=True)
     best_loss = float('inf') 
 
-    print("⚡ BẮT ĐẦU HUẤN LUYỆN...")
+    print("BẮT ĐẦU HUẤN LUYỆN...")
     for epoch in range(num_epochs):
         total_loss, correct_preds, total_samples = 0.0, 0, 0
         loop = tqdm(train_loader, desc=f"Epoch {epoch+1}/{num_epochs}")

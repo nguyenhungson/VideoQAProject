@@ -134,7 +134,6 @@ class MSRVTTQADataset(Dataset):
             'label': torch.tensor(self.ans2idx[item['answer']])
         }
 
-# HÀM CHIA SẺ TEST LOADER: ĐẢM BẢO FAIR PLAY CHO TẤT CẢ MODEL
 def get_shared_test_loader(num_samples=1000):
     train_ds = MSRVTTQADataset(os.path.join(DATA_DIR, 'train_qa.json'), FEAT_DIR)
     full_test_ds = MSRVTTQADataset(os.path.join(DATA_DIR, 'test_qa.json'), FEAT_DIR, ans2idx=train_ds.ans2idx)
